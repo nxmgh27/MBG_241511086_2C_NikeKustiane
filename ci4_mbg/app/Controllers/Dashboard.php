@@ -2,11 +2,16 @@
 
 namespace App\Controllers;
 
+use App\Models\BahanBakuModel;
+
 class Dashboard extends BaseController
 {
     public function gudang()
     {
-        return view('dashboard/gudang');
+        $model = new BahanBakuModel();
+        $data['bahanBaku'] = $model->findAll();
+
+        return view('dashboard/gudang', $data);
     }
 
     public function dapur()
