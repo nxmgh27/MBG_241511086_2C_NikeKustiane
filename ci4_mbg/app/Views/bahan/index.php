@@ -4,8 +4,19 @@
 <div class="container py-4">
   <h3 class="mb-4"><i class="fa fa-box me-2"></i> Data Bahan Baku</h3>
 
+  <!-- Flashdata Alert -->
   <?php if(session()->getFlashdata('success')): ?>
-    <div class="alert alert-success"><?= session()->getFlashdata('success') ?></div>
+    <div id="flash-success" class="alert alert-success alert-dismissible fade show auto-close" role="alert">
+      <?= session()->getFlashdata('success') ?>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <?php endif; ?>
+
+  <?php if(session()->getFlashdata('error')): ?>
+    <div id="flash-error" class="alert alert-danger alert-dismissible fade show auto-close" role="alert">
+      <?= session()->getFlashdata('error') ?>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
   <?php endif; ?>
 
   <!-- Search bar -->
@@ -58,9 +69,17 @@
                   <a href="/bahan/edit/<?= $b['id'] ?>" class="btn btn-sm btn-primary">
                     <i class="fa fa-edit"></i>
                   </a>
-                  <a href="/bahan/delete/<?= $b['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus?')">
+                  <button 
+                    class="btn btn-sm btn-danger btn-hapus" 
+                    data-id="<?= $b['id'] ?>" 
+                    data-nama="<?= $b['nama'] ?>" 
+                    data-status="<?= $b['status'] ?>" 
+                    data-jumlah="<?= $b['jumlah'] ?>" 
+                    data-satuan="<?= $b['satuan'] ?>"
+                    <?= $b['status'] != 'kadaluarsa' ? 'disabled' : '' ?>
+                  >
                     <i class="fa fa-trash"></i>
-                  </a>
+                  </button>
                 </td>
               </tr>
               <?php endforeach; ?>
@@ -74,7 +93,34 @@
   </div>
 </div>
 
+<!-- Modal Hapus -->
+<div class="modal fade" id="hapusModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="formHapus" method="post">
+        <?= csrf_field() ?>
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title"><i class="fa fa-trash"></i> Konfirmasi Hapus</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p id="infoBahan" class="mb-3"></p>
+          <div id="alertTidakBisa" class="alert alert-warning d-none">
+            Bahan ini tidak dapat dihapus karena statusnya bukan <b>Kadaluarsa</b>.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-danger" id="btnConfirmHapus">Hapus</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+// Search filter
 const searchInput = document.getElementById('searchInput');
 const table = document.getElementById('bahanTable').getElementsByTagName('tbody')[0];
 searchInput.addEventListener('keyup', function() {
@@ -82,6 +128,58 @@ searchInput.addEventListener('keyup', function() {
   Array.from(table.rows).forEach(row => {
     const nama = row.cells[1].textContent.toLowerCase();
     row.style.display = nama.includes(filter) ? '' : 'none';
+  });
+});
+
+// Modal hapus
+const hapusModal = new bootstrap.Modal(document.getElementById('hapusModal'));
+const formHapus = document.getElementById('formHapus');
+const infoBahan = document.getElementById('infoBahan');
+const btnConfirmHapus = document.getElementById('btnConfirmHapus');
+const alertTidakBisa = document.getElementById('alertTidakBisa');
+
+document.querySelectorAll('.btn-hapus').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const id = btn.dataset.id;
+    const nama = btn.dataset.nama;
+    const status = btn.dataset.status;
+    const jumlah = btn.dataset.jumlah;
+    const satuan = btn.dataset.satuan;
+
+    infoBahan.innerHTML = `
+      Apakah Anda yakin ingin menghapus <b>${nama}</b>? <br>
+      Jumlah: ${jumlah} ${satuan} <br>
+      Status: <span class="badge ${status === 'kadaluarsa' ? 'bg-danger' : 'bg-secondary'}">${status}</span>
+    `;
+
+    formHapus.action = "/bahan/delete/" + id;
+
+    if(status !== 'kadaluarsa'){
+      btnConfirmHapus.disabled = true;
+      alertTidakBisa.classList.remove('d-none');
+    } else {
+      btnConfirmHapus.disabled = false;
+      alertTidakBisa.classList.add('d-none');
+    }
+
+    hapusModal.show();
+  });
+});
+
+// Flashdata auto-close 3 detik
+document.addEventListener('DOMContentLoaded', function() {
+  const AUTO_CLOSE_MS = 3000;
+  document.querySelectorAll('.alert.auto-close').forEach(alertEl => {
+    setTimeout(() => {
+      if (!document.body.contains(alertEl)) return;
+      try {
+        const bsAlert = bootstrap.Alert.getOrCreateInstance(alertEl);
+        bsAlert.close();
+      } catch (err) {
+        alertEl.remove();
+      }
+    }, AUTO_CLOSE_MS);
   });
 });
 </script>

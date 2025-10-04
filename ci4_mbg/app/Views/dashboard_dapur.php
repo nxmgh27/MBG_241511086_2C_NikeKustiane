@@ -48,6 +48,8 @@
       <i class="fa fa-utensils me-2"></i> Dapur - MBG
     </h4>
     <a href="#"><i class="fa fa-home me-2"></i> Dashboard</a>
+    <a href="/dapur/status_permintaan" class="<?= url_is('dapur/status_permintaan') ? 'active' : '' ?>">
+      <i class="fa fa-clipboard-list me-2"></i> Status Permintaan</a>
     <a href="/logout"><i class="fa fa-sign-out-alt me-2"></i> Logout</a>
   </div>
 
