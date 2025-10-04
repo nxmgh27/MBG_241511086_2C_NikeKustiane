@@ -28,6 +28,7 @@
             <option value="Bahan Segar">Protein Hewani</option>
             <option value="Bahan Lain">Protein Nabati</option>
             <option value="Bahan Lain">Sayuran</option>
+            <option value="Bahan Lain">Buah</option>
           </select>
         </div>
         <div class="row">

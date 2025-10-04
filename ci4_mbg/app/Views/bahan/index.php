@@ -2,25 +2,28 @@
 <?= $this->section('content') ?>
 
 <div class="container py-4">
-  <h3 class="mb-4">Data Bahan Baku</h3>
+  <h3 class="mb-4"><i class="fa fa-box me-2"></i> Data Bahan Baku</h3>
 
   <?php if(session()->getFlashdata('success')): ?>
     <div class="alert alert-success"><?= session()->getFlashdata('success') ?></div>
   <?php endif; ?>
 
+  <!-- Search bar -->
   <input type="text" id="searchInput" class="form-control mb-3" placeholder="Cari bahan baku...">
 
+  <!-- Card -->
   <div class="card shadow-lg border-0">
-    <div class="card-header d-flex justify-content-between align-items-center" style="background:#688A65; color:white;">
-      <span><i class="fa fa-box me-2"></i> Daftar Bahan Baku</span>
+    <div class="card-header d-flex justify-content-between align-items-center" 
+         style="background:#1C2D2A; color:#FFFFFF;">
+      <strong>Daftar Bahan Baku</strong>
       <a href="/bahan/create" class="btn btn-light btn-sm">
         <i class="fa fa-plus me-1"></i> Tambah Bahan
       </a>
     </div>
     <div class="card-body bg-white">
       <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover align-middle" id="bahanTable">
-          <thead class="table-dark">
+        <table class="table table-bordered table-hover align-middle" id="bahanTable">
+          <thead style="background:#97AC82; color:#FFFFFF;">
             <tr>
               <th>No</th>
               <th>Nama</th>
@@ -82,5 +85,15 @@ searchInput.addEventListener('keyup', function() {
   });
 });
 </script>
+
+<style>
+  .table-hover tbody tr:hover {
+    background-color: #f0f5ec !important;
+  }
+  .badge {
+    font-size: 0.85rem;
+    padding: 0.35em 0.6em;
+  }
+</style>
 
 <?= $this->endSection() ?>

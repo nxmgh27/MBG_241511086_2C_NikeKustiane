@@ -51,8 +51,9 @@
       <i class="fa fa-home me-2"></i> Dashboard
     </a>
     <a href="/bahan" class="<?= url_is('bahan*') ? 'active' : '' ?>">
-      <i class="fa fa-box me-2"></i> Data Bahan Baku
-    </a>
+      <i class="fa fa-box me-2"></i> Data Bahan Baku</a>
+    <a href="/gudang/status_permintaan" class="<?= url_is('gudang/status_permintaan') ? 'active' : '' ?>">
+      <i class="fa fa-clipboard-list me-2"></i> Status Permintaan</a>
     <a href="/logout"><i class="fa fa-sign-out-alt me-2"></i> Logout</a>
   </div>
 
@@ -66,6 +67,7 @@
       </div>
     </div>
 
+    <!-- Halaman dinamis -->
     <?= $this->renderSection('content') ?>
   </div>
 

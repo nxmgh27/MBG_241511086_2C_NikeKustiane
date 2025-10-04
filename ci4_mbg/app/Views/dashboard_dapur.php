@@ -6,31 +6,31 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
-    body { background: #DDDFC2; } /* Bone */
+    body { background: #DDDFC2; } 
     .sidebar {
       width: 220px;
       height: 100vh;
       position: fixed;
       top: 0; left: 0;
-      background: #1C2D2A; /* Russian Green */
+      background: #1C2D2A;
       padding: 20px 0;
       color: #fff;
     }
     .sidebar a {
       display: block;
       padding: 10px 20px;
-      color: #DDDFC2; /* Bone */
+      color: #DDDFC2; 
       text-decoration: none;
     }
     .sidebar a:hover {
-      background: #97AC82; /* Olivine */
+      background: #97AC82; 
     }
     .content {
       margin-left: 220px;
       padding: 20px;
     }
     .topbar {
-      background: #97AC82; /* Olivine */
+      background: #97AC82; 
       padding: 10px 20px;
       color: #2C341B;
       display: flex;

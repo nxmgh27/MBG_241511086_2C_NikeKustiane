@@ -41,7 +41,7 @@
           <input type="date" name="tanggal_kadaluarsa" class="form-control" value="<?= $bahan['tanggal_kadaluarsa'] ?>" required>
         </div>
         <div class="d-flex justify-content-end">
-          <a href="/bahan" class="btn btn-secondary me-2">Kembali</a>
+          <a href="/bahan" class="btn btn-secondary me-2"><i class="fa fa-arrow-left me-1"></i>Kembali</a>
           <button type="submit" class="btn btn-success"><i class="fa fa-save me-1"></i> Simpan</button>
         </div>
       </form>
