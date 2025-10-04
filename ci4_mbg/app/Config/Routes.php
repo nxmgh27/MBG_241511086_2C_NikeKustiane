@@ -18,5 +18,6 @@ $routes->get('/bahan/create', 'Bahan::create');         // Form tambah bahan
 $routes->post('/bahan/simpan', 'Bahan::store');         // Simpan bahan baru
 $routes->get('/bahan/edit/(:num)', 'Bahan::edit/$1');   // Form edit bahan
 $routes->post('/bahan/update/(:num)', 'Bahan::update/$1'); // Update bahan
+$routes->get('/bahan/delete/(:num)', 'Bahan::delete/$1');   // Hapus bahan
 
 

@@ -54,7 +54,7 @@ class Bahan extends BaseController
             'created_at' => date('Y-m-d H:i:s'),
         ]);
 
-        return redirect()->to('/bahan')->with('success', 'Bahan Baku berhasil ditambah.');
+        return redirect()->to('/bahan')->with('success', 'Bahan Baku berhasil ditambahkan!');
     }
 
     public function edit($id)
@@ -83,6 +83,9 @@ class Bahan extends BaseController
         return redirect()->to('/bahan')->with('success', 'Data berhasil diupdate!');
     }
 
-
-
+    public function delete($id)
+    {
+        $this->bahanModel->delete($id);
+        return redirect()->to('/bahan')->with('success', 'Data berhasil dihapus!');
+    }
 }
