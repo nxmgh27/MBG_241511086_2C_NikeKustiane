@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard Gudang MBG</title>
+  <title><?= $title ?? 'Dashboard Gudang MBG' ?></title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
@@ -47,20 +47,26 @@
     <h4 class="text-center mb-4">
       <i class="fa fa-warehouse me-2"></i> Gudang - MBG
     </h4>
-    <a href="#"><i class="fa fa-home me-2"></i> Dashboard</a>
+    <a href="/dashboard/gudang" class="<?= url_is('dashboard/gudang') ? 'active' : '' ?>">
+      <i class="fa fa-home me-2"></i> Dashboard
+    </a>
+    <a href="/bahan" class="<?= url_is('bahan*') ? 'active' : '' ?>">
+      <i class="fa fa-box me-2"></i> Data Bahan Baku
+    </a>
     <a href="/logout"><i class="fa fa-sign-out-alt me-2"></i> Logout</a>
   </div>
 
   <!-- Content -->
   <div class="content">
-    <!-- Topbar -->
-    <div class="topbar">
-      <h5><i class="fa fa-warehouse me-2"></i> Dashboard Gudang</h5>
+    <div class="topbar mb-4">
+      <h5><i class="fa fa-warehouse me-2"></i></h5>
       <div>
         <span class="me-3"><?= session()->get('name'); ?> (<?= session()->get('role'); ?>)</span>
         <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" width="35" class="rounded-circle">
       </div>
     </div>
+
+    <?= $this->renderSection('content') ?>
   </div>
 
 </body>
