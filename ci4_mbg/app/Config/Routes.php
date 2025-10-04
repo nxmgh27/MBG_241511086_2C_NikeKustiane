@@ -12,4 +12,7 @@ $routes->get('/logout', 'Auth::logout');
 $routes->get('/dashboard/gudang', 'Dashboard::gudang');
 $routes->get('/dashboard/dapur', 'Dashboard::dapur');
 
+$routes->get('/bahan/create', 'Bahan::create');
+$routes->post('/bahan/store', 'Bahan::store');
+
 
