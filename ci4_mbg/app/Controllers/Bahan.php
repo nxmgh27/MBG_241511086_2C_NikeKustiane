@@ -56,4 +56,33 @@ class Bahan extends BaseController
 
         return redirect()->to('/bahan')->with('success', 'Bahan Baku berhasil ditambah.');
     }
+
+    public function edit($id)
+    {
+        $data['bahan'] = $this->bahanModel->find($id);
+        return view('bahan/edit', $data);
+    }
+
+    public function update($id)
+    {
+        $jumlah = $this->request->getPost('jumlah');
+        if ($jumlah < 0) {
+            return redirect()->back()->with('error', 'Jumlah stok tidak boleh kurang dari 0!');
+        }
+
+        $this->bahanModel->update($id, [
+            'nama' => $this->request->getPost('nama'),
+            'kategori' => $this->request->getPost('kategori'),
+            'jumlah' => $jumlah,
+            'satuan' => $this->request->getPost('satuan'),
+            'tanggal_masuk' => $this->request->getPost('tanggal_masuk'),
+            'tanggal_kadaluarsa' => $this->request->getPost('tanggal_kadaluarsa'),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        return redirect()->to('/bahan')->with('success', 'Data berhasil diupdate!');
+    }
+
+
+
 }
