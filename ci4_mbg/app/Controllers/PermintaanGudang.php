@@ -1,12 +1,11 @@
 <?php
 
 namespace App\Controllers;
-
 use App\Models\BahanModel;
 use App\Models\PermintaanModel;
 use App\Models\PermintaanDetailModel;
 
-class PermintaanDapur extends BaseController
+class PermintaanGudang extends BaseController
 {
     protected $bahanModel;
     protected $permintaanModel;
@@ -19,81 +18,79 @@ class PermintaanDapur extends BaseController
         $this->permintaanDetailModel = new PermintaanDetailModel();
     }
 
-    // Form permintaan bahan
-    public function create()
+    // Tampilkan daftar permintaan
+    public function statusPermintaan()
     {
-        // Ambil bahan yang stok > 0 & status != kadaluarsa
-        $data['bahan'] = $this->bahanModel
-                              ->where('jumlah >', 0)
-                              ->where('status !=', 'kadaluarsa')
-                              ->findAll();
+        $permintaan = $this->permintaanModel->findAll();
 
-        return view('dapur/create_permintaan', $data);
+        // Ambil detail per permintaan
+        foreach($permintaan as &$p){
+            $p['detail'] = $this->permintaanDetailModel
+                                ->select('permintaan_detail.*, bahan_baku.nama as bahan_nama, bahan_baku.jumlah as stok')
+                                ->join('bahan_baku', 'bahan_baku.id = permintaan_detail.bahan_id')
+                                ->where('permintaan_id', $p['id'])
+                                ->findAll();
+        }
+
+        $data['permintaan'] = $permintaan;
+        return view('gudang/status_permintaan', $data);
     }
 
-    // Simpan permintaan
-    public function store()
+    // Setujui permintaan
+    public function approve($id)
     {
-        $menu_makan = $this->request->getPost('menu_makan');
-        $tgl_masak = $this->request->getPost('tgl_masak');
-        $jumlah_porsi = $this->request->getPost('jumlah_porsi');
-        $bahan_ids = $this->request->getPost('bahan_id'); // array
-        $jumlah_diminta = $this->request->getPost('jumlah_diminta'); // array
+        $permintaan = $this->permintaanModel->find($id);
+        if (!$permintaan) {
+            return redirect()->back()->with('error', 'Permintaan tidak ditemukan!');
+        }
 
-        // Simpan ke tabel permintaan
-        $permintaan_id = $this->permintaanModel->insert([
-            'tgl_masak' => $tgl_masak,
-            'menu_makan' => $menu_makan,
-            'jumlah_porsi' => $jumlah_porsi,
-            'status' => 'menunggu',
-            'created_at' => date('Y-m-d H:i:s')
-        ]);
+        $detail = $this->permintaanDetailModel
+                       ->where('permintaan_id', $id)
+                       ->findAll();
 
-        // Simpan detail permintaan
-        foreach($bahan_ids as $key => $bahan_id) {
-            if($bahan_id && $jumlah_diminta[$key] > 0) {
-                $this->permintaanDetailModel->insert([
-                    'permintaan_id' => $permintaan_id,
-                    'bahan_id' => $bahan_id,
-                    'jumlah_diminta' => $jumlah_diminta[$key]
+        foreach($detail as $d) {
+            $bahan = $this->bahanModel->find($d['bahan_id']);
+            if ($bahan) {
+                $stokAkhir = $bahan['jumlah'] - $d['jumlah_diminta'];
+                $statusBahan = $stokAkhir <= 0 ? 'habis' : $bahan['status'];
+
+                $this->bahanModel->update($bahan['id'], [
+                    'jumlah' => $stokAkhir,
+                    'status' => $statusBahan
                 ]);
             }
         }
 
-        return redirect()->to('/dapur/permintaan')->with('success', 'Permintaan berhasil dibuat!');
+        $this->permintaanModel->update($id, [
+            'status' => 'disetujui'
+        ]);
+
+        return redirect()->back()->with('success', 'Permintaan berhasil disetujui!');
     }
 
-    // Lihat status permintaan
-    public function index()
+    // Tolak permintaan
+    public function reject($id)
     {
-        $rows = $this->permintaanModel->getPermintaanWithDetail();
+        $alasan = $this->request->getPost('alasan');
 
-        $permintaan = [];
-        foreach ($rows as $row) {
-            $id = $row['id'];
-            if (!isset($permintaan[$id])) {
-                $permintaan[$id] = [
-                    'id' => $id,
-                    'tgl_masak' => $row['tgl_masak'],
-                    'menu_makan' => $row['menu_makan'],
-                    'jumlah_porsi' => $row['jumlah_porsi'],
-                    'status' => $row['status'],
-                    'created_at' => $row['created_at'],
-                    'detail' => [],
-                ];
-            }
-            if ($row['bahan_id']) {
-                $permintaan[$id]['detail'][] = [
-                    'bahan_id' => $row['bahan_id'],
-                    'bahan_nama' => $row['bahan_nama'],
-                    'jumlah_diminta' => $row['jumlah_diminta'],
-                    'stok' => $row['stok']
-                ];
-            }
+        $this->permintaanModel->update($id, [
+            'status' => 'ditolak',
+            'alasan' => $alasan
+        ]);
+
+        return redirect()->back()->with('error', 'Permintaan ditolak. Alasan: ' . $alasan);
+    }
+
+    
+
+    public function edit_status($id)
+    {
+        $status = $this->request->getPost('status');
+        if($status) {
+            $this->permintaanModel->update($id, ['status' => $status]);
+            return redirect()->to('/gudang/status_permintaan')->with('success', 'Status berhasil diperbarui');
         }
-
-        $data['permintaan'] = array_values($permintaan);
-        return view('dapur/status_permintaan', $data);
+        return redirect()->to('/gudang/status_permintaan')->with('error', 'Gagal memperbarui status');
     }
 
 }

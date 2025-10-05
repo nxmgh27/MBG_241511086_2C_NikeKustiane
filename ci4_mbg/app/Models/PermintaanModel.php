@@ -9,7 +9,10 @@ class PermintaanModel extends Model
     protected $primaryKey = 'id';
     protected $allowedFields = ['pemohon_id','tgl_masak','menu_makan','jumlah_porsi','status','created_at'];
 
-    // Ambil semua permintaan beserta detail bahan
+    protected $useTimestamps = true;  
+    protected $createdField  = 'created_at';
+    protected $updatedField  = '';    
+
     public function getPermintaanWithDetail()
     {
         $builder = $this->db->table('permintaan p')
@@ -20,16 +23,11 @@ class PermintaanModel extends Model
         return $builder->get()->getResultArray();
     }
 
-    // Method khusus untuk Dapur
-    public function getPermintaanWithDetailDapur()
+    public function createPermintaan($data)
     {
-        $builder = $this->db->table('permintaan p')
-                    ->select('p.*, pd.bahan_id, pd.jumlah_diminta, b.nama as bahan_nama, b.jumlah as stok')
-                    ->join('permintaan_detail pd', 'pd.permintaan_id = p.id', 'left')
-                    ->join('bahan_baku b', 'b.id = pd.bahan_id', 'left')
-                    ->orderBy('p.created_at', 'DESC');
+        $data['status'] = $data['status'] ?? 'menunggu';
 
-        return $builder->get()->getResultArray();
+        return $this->insert($data);
     }
 
 }
